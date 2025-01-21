@@ -1,0 +1,103 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using ChatWithMe.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ChatWithMe.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ChatRoomController : ControllerBase
+    {
+        private readonly Context _context;
+
+        public ChatRoomController(Context context)
+        {
+            _context = context;
+        }
+
+        // GET: api/ChatRoom
+        [HttpGet]
+     
+        public async Task<ActionResult<IEnumerable<ChatRoom>>> GetChatRooms()
+        {
+            var chatRooms = await _context.ChatRoom
+                .Include(c => c.Messages) 
+                .Include(c => c.UserChatRooms) 
+                .ToListAsync();
+
+            return Ok(chatRooms);
+        }
+
+        // GET: api/ChatRoom/{id}
+        [HttpGet("{id}")]
+     
+        public async Task<ActionResult<ChatRoom>> GetChatRoom(int id)
+        {
+            var chatRoom = await _context.ChatRoom
+                .Include(c => c.Messages) 
+                .Include(c => c.UserChatRooms) 
+                .FirstOrDefaultAsync(c => c.RoomID == id);
+
+            if (chatRoom == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+               chatRoom.RoomName
+            }    
+                );
+        }
+
+        // POST: api/ChatRoom
+        [HttpPost]
+        public async Task<ActionResult<ChatRoom>> CreateChatRoom(ChatRoom chatRoom)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var Admin = await _context.User.FindAsync(chatRoom.CreatedByID);
+            var roomExists = await _context.ChatRoom.AnyAsync(r => r.RoomName == chatRoom.RoomName);
+            if (roomExists)
+            {
+                return BadRequest(new { message = $"Room '{chatRoom.RoomName}' already exists." });
+            }
+            _context.ChatRoom.Add(chatRoom);
+            await _context.SaveChangesAsync();
+            return Ok(new {
+                message = "Room Created Successfully",
+                chatRoom.RoomName,
+                chatRoom.RoomID,
+                User = new
+                {
+                    Admin.UserName,
+                    Admin.Email,
+                }
+
+
+            });
+        }
+
+
+        // DELETE: api/ChatRoom/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteChatRoom(int id)
+        {
+            var chatRoom = await _context.ChatRoom.FindAsync(id);
+            if (chatRoom == null)
+            {
+                return NotFound();
+            }
+
+            _context.ChatRoom.Remove(chatRoom);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
+}

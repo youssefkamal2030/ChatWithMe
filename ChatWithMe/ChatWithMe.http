@@ -1,0 +1,6 @@
+@ChatWithMe_HostAddress = http://localhost:5188
+
+GET {{ChatWithMe_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

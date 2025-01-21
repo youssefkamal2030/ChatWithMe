@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+*{
+   
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'lato ', sans-serif;
+}
+
+.home .Rooms .Frineds{
+  display: flex;
+  height: 98vh ;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
