@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatWithMe.Models.DTO_s;
 
 namespace ChatWithMe.Controllers
 {
@@ -23,11 +24,17 @@ namespace ChatWithMe.Controllers
         public async Task<ActionResult<IEnumerable<Message>>> GetMessagesByRoom(int roomId)
         {
             var messages = await _context.Message
-                .Where(m => m.RoomID == roomId)
-                .Include(m => m.Sender) // Include the sender details
-                .ToListAsync();
+        .Where(m => m.RoomID == roomId)
+        .Include(m => m.Sender) // Load the Sender navigation property
+        .Select(m => new RoomMessages
+        {
+            Username = m.Sender.UserName,
+            Content = m.Content,
+            SentAt = m.SentAt
+        })
+        .ToListAsync();
 
-            return Ok(messages);
+            return Ok(new { messages }); 
         }
 
         // POST: api/Message

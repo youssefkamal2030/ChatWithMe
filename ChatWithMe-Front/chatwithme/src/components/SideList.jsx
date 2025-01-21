@@ -13,16 +13,16 @@ const SideList = () => {
   return (
     <>
       <div className="SideList">
-        <Link to="/" className="menu-bars" onClick={showSidebar}>
-          <Faicons.FaBars />
-        </Link>
+      <div className="menu-bars" onClick={showSidebar}>
+  <Faicons.FaBars />
+</div>
       </div>
       <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
         <ul className="nav-menu-items">
           <li className="navbar-toggle">
-            <Link to="/" className="menu-bars" onClick={showSidebar}>
-              <AiIcons.AiOutlineClose />
-            </Link>
+          <div className="menu-bars" onClick={showSidebar}>
+  <AiIcons.AiOutlineClose />
+</div>
           </li>
           {SideListData.map((item, index) => {
             return (

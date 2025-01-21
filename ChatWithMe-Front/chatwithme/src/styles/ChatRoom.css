@@ -1,61 +1,38 @@
-.chat-container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.chat-header {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.chat-messages {
-    height: 400px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: #fff;
-    margin-bottom: 20px;
-}
-
+/* Add to ChatRoom.css */
 .message {
-    margin-bottom: 10px;
-    padding: 8px;
-    border-radius: 5px;
-    background-color: #e9ecef;
-}
-
-.message strong {
-    color: #007bff;
-}
-
-.chat-inputs {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .your-message {
+    background: #e3f2fd;
+    margin-left: 20%;
+  }
+  
+  .other-message {
+    background: #f5f5f5;
+    margin-right: 20%;
+  }
+  
+  .message-header {
     display: flex;
-    gap: 10px;
-}
-
-.chat-inputs input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.chat-inputs button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-}
-
-.chat-inputs button:hover {
-    background-color: #0056b3;
-}
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .username {
+    font-weight: 600;
+    color: #007bff;
+  }
+  
+  .message-time {
+    color: #666;
+  }
+  
+  .message-content {
+    word-break: break-word;
+  }
