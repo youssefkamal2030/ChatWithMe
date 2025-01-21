@@ -5,6 +5,7 @@ using ChatWithMe.Hubs;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ChatWithMe.Services;
 
 namespace ChatWithMe
 {
@@ -23,7 +24,7 @@ namespace ChatWithMe
                            .AllowCredentials(); 
                 });
             });
-            
+            builder.Services.AddSingleton<UserTrackerService>();
             builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

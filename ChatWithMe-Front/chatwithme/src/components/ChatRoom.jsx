@@ -8,48 +8,38 @@ const ChatRoom = () => {
   const { roomId } = useParams();
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
   const [message, setMessage] = useState("");
   const [roomName, setRoomName] = useState("");
   const latestMessageRef = useRef(null);
-
   const username = localStorage.getItem("username");
 
-  // Fetch messages from the backend
+  // Fetch initial data
   useEffect(() => {
-    const fetchRoomMessages = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await axios.get(
+        // Fetch messages
+        const messagesResponse = await axios.get(
           `https://localhost:44346/api/Message/room/${roomId}`
         );
-        // Use optional chaining and default to empty array
-        setMessages(response.data?.messages?.$values || []); 
-      } catch (err) {
-        console.error("Error fetching messages:", err);
-        setMessages([]); // Ensure messages is always an array
-      }
-    };
+        setMessages(messagesResponse.data?.messages?.$values || []);
 
-    fetchRoomMessages();
-  }, [roomId]);
-
-  // Fetch room details separately
-  useEffect(() => {
-    const fetchRoomDetails = async () => {
-      try {
-        const response = await axios.get(
+        // Fetch room details
+        const roomResponse = await axios.get(
           `https://localhost:44346/api/ChatRoom/${roomId}`
         );
-        setRoomName(response.data?.roomName || "Unknown Room");
+        setRoomName(roomResponse.data?.roomName || "Unknown Room");
       } catch (err) {
-        console.error("Error fetching room details:", err);
+        console.error("Initial data fetch error:", err);
+        setMessages([]);
         setRoomName("Unknown Room");
       }
     };
 
-    if (roomId) fetchRoomDetails();
+    fetchInitialData();
   }, [roomId]);
 
-  // SignalR connection setup
+  // SignalR connection management
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:44346/chatHub")
@@ -57,24 +47,28 @@ const ChatRoom = () => {
       .build();
 
     setConnection(newConnection);
+
+    return () => {
+      if (newConnection) {
+        newConnection.stop();
+      }
+    };
   }, []);
 
-  // Handle SignalR connection and messages
+  // Handle SignalR events
   useEffect(() => {
     if (connection && roomName && username) {
-      connection
-        .start()
+      connection.start()
         .then(() => {
           console.log("Connected to SignalR Hub");
+          connection.invoke("JoinRoom", roomName, username);
 
-          connection.invoke("JoinRoom", roomName, username)
-            .catch(err => console.error("Error joining room:", err));
-
-          connection.on("ReceiveMessage", (user, message) => {
-            setMessages(prev => [...prev, {
-              username: user,
-              content: message,
-              sentAt: new Date().toISOString()
+          // Message handlers
+          connection.on("ReceiveMessage", (user, content, sentAt) => {
+            setMessages(prev => [...prev, { 
+              username: user, 
+              content, 
+              sentAt 
             }]);
           });
 
@@ -85,33 +79,54 @@ const ChatRoom = () => {
               sentAt: new Date().toISOString()
             }]);
           });
+
+          connection.on("ActiveUsers", (users) => {
+            setActiveUsers(users);
+          });
+
+          // Cleanup
+          return () => {
+            connection.off("ReceiveMessage");
+            connection.off("Notify");
+            connection.off("ActiveUsers");
+            connection.invoke("LeaveRoom", roomName, username);
+          };
         })
-        .catch(err => console.error("Connection failed:", err));
+        .catch(err => console.error("Connection error:", err));
     }
   }, [connection, roomName, username]);
 
-  // Auto-scroll to latest message
+  // Auto-scroll to bottom
   useEffect(() => {
     latestMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async () => {
-    if (connection && username && message && roomName) {
-      try {
-        await connection.invoke("SendMessage", roomName, username, message);
-        setMessage("");
-      } catch (err) {
-        console.error("Error sending message:", err);
-        alert("Failed to send message");
-      }
-    } else {
-      alert("Please enter a message.");
+    if (!message.trim()) return;
+
+    try {
+      await connection.invoke("SendMessage", roomName, username, message);
+      setMessage("");
+    } catch (err) {
+      console.error("Message send error:", err);
+      alert("Failed to send message");
     }
   };
 
   return (
     <div className="chat-container">
-      <h1 className="chat-header">{roomName}</h1>
+      <div className="chat-header">
+        <h1>{roomName}</h1>
+        <div className="active-users">
+          <h3>Active Users ({activeUsers.length})</h3>
+          <ul>
+            {activeUsers.map((user, index) => (
+              <li key={index}>{user}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <div className="chat-messages">
         {messages.map((msg, index) => (
           <div key={index} 
@@ -119,7 +134,10 @@ const ChatRoom = () => {
             <div className="message-header">
               <span className="username">{msg.username}</span>
               <span className="message-time">
-                {new Date(msg.sentAt).toLocaleTimeString()}
+                {new Date(msg.sentAt).toLocaleTimeString([], { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
               </span>
             </div>
             <div className="message-content">{msg.content}</div>
@@ -127,16 +145,16 @@ const ChatRoom = () => {
         ))}
         <div ref={latestMessageRef}></div>
       </div>
-      <div className="chat-inputs">
+
+      <div className="chat-input">
         <input
           type="text"
-          placeholder="Type a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          className="form-control"
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Type your message..."
         />
-        <button onClick={sendMessage} className="btn btn-primary">
+        <button onClick={sendMessage}>
           Send
         </button>
       </div>
