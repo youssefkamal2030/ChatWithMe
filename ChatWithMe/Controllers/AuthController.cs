@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using ChatWithMe.Models.DTO_s;
+using static System.Net.Mime.MediaTypeNames;
 
 [ApiController]
 [Route("[controller]")]
@@ -16,31 +18,80 @@ public class AuthController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<User> _roleManager;
-    private readonly IConfiguration _configuration; 
-    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+    private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _env;
+    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration,IWebHostEnvironment env)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _env = env;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] User user)
+    public async Task<IActionResult> Register([FromForm] Register dto)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-       
-            var password = user.Password; //this to store the password as plain-text for testing reasons 
-            var ExistingUser = await _userManager.FindByEmailAsync(user.Email);
+            return BadRequest(ModelState);
+        }
+
+        var password = dto.Password; //this to store the password as plain-text for testing reasons 
+            var ExistingUser = await _userManager.FindByEmailAsync(dto.Email);
             if(ExistingUser != null)
             {
                 return BadRequest(new { message = "This user Already Exists" });
             }
+        string profilePicturePath = null;
+        string filePath = null;
+
+        try
+        {
+            // Handle profile picture upload
+            if (dto.ProfilePicture != null)
+            {
+                // Validation
+                if (dto.ProfilePicture.Length > 2 * 1024 * 1024)
+                {
+                    return BadRequest("Profile picture must be less than 2MB");
+                }
+
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(dto.ProfilePicture.FileName).ToLower();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    return BadRequest("Invalid file type. Allowed types: JPG, PNG, GIF");
+                }
+                // Generate unique filename
+                var fileName = $"{Guid.NewGuid()}{extension}";
+                var uploadsFolder = Path.Combine(_env.ContentRootPath, "uploads");
+                Directory.CreateDirectory(uploadsFolder); // Ensure directory exists
+
+                filePath = Path.Combine(uploadsFolder, fileName);
+
+                // Save file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.ProfilePicture.CopyToAsync(stream);
+                }
+
+                profilePicturePath = $"/uploads/{fileName}";
+            }
+
+            var user = new User
+            {
+                UserName = dto.UserName,
+                Email = dto.Email,
+                Password = password,
+                Bio = dto.Bio,
+                ProfilePicture = profilePicturePath
+
+            };
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)
             {
-                
+
                 user.Password = password;
                 await _userManager.UpdateAsync(user);
 
@@ -51,12 +102,6 @@ public class AuthController : ControllerBase
                 return BadRequest(result.Errors);
             }
         }
-        else
-        {
-            return BadRequest(new { message = "Invalid model state." });
-        }
-    }
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user)
     {

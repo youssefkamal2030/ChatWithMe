@@ -25,22 +25,28 @@ const Header = () => {
           Rooms
         </Link>
         {isLoggedIn ? (
-          <>
-            <span className="text-white me-3">Hi {username} 👋</span>
-            <button onClick={handleLogout} className="btn btn-outline-light">
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="btn btn-light me-2">
-              Login
-            </Link>
-            <Link to="/register" className="btn btn-outline-light">
-              Register
-            </Link>
-          </>
-        )}
+  <>
+    <Link 
+      to="/profile" 
+      className="profile-link d-flex align-items-center me-2"
+    >
+      <span className="text-white">Hi {username}</span>
+      <span className="emoji ms-1">👋</span>
+    </Link>
+    <button onClick={handleLogout} className="btn btn-outline-light">
+      Logout
+    </button>
+  </>
+) : (
+  <>
+    <Link to="/login" className="btn btn-light me-2">
+      Login
+    </Link>
+    <Link to="/register" className="btn btn-outline-light">
+      Register
+    </Link>
+  </>
+)}
       </nav>
     </header>
   );

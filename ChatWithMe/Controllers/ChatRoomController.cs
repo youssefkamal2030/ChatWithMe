@@ -20,12 +20,12 @@ namespace ChatWithMe.Controllers
 
         // GET: api/ChatRoom
         [HttpGet]
-     
+
         public async Task<ActionResult<IEnumerable<ChatRoom>>> GetChatRooms()
         {
             var chatRooms = await _context.ChatRoom
-                .Include(c => c.Messages) 
-                .Include(c => c.UserChatRooms) 
+                .Include(c => c.Messages)
+                .Include(c => c.UserChatRooms)
                 .ToListAsync();
 
             return Ok(chatRooms);
@@ -33,23 +33,22 @@ namespace ChatWithMe.Controllers
 
         // GET: api/ChatRoom/{id}
         [HttpGet("{id}")]
-     
+
         public async Task<ActionResult<ChatRoom>> GetChatRoom(int id)
         {
             var chatRoom = await _context.ChatRoom
-                .Include(c => c.Messages) 
-                .Include(c => c.UserChatRooms) 
+                .Include(c => c.Messages)
+                .Include(c => c.UserChatRooms)
                 .FirstOrDefaultAsync(c => c.RoomID == id);
 
             if (chatRoom == null)
             {
                 return NotFound();
             }
-
             return Ok(new
             {
-               chatRoom.RoomName
-            }    
+                chatRoom.RoomName
+            }
                 );
         }
 
@@ -69,7 +68,8 @@ namespace ChatWithMe.Controllers
             }
             _context.ChatRoom.Add(chatRoom);
             await _context.SaveChangesAsync();
-            return Ok(new {
+            return Ok(new
+            {
                 message = "Room Created Successfully",
                 chatRoom.RoomName,
                 chatRoom.RoomID,
@@ -98,6 +98,41 @@ namespace ChatWithMe.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        //Update: api/ChatRoom/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRoom(int id, ChatRoom chatRoom)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Check for duplicate room name (excluding current room)
+            var roomExists = await _context.ChatRoom
+                .AnyAsync(r => r.RoomName == chatRoom.RoomName && r.RoomID != id);
+            if (roomExists)
+            {
+                return BadRequest(new { message = $"Room '{chatRoom.RoomName}' already exists." });
+            }
+
+            var existingRoom = await _context.ChatRoom.FindAsync(id);
+            if (existingRoom == null)
+            {
+                return NotFound();
+            }
+
+            // Update only allowed fields
+            existingRoom.RoomName = chatRoom.RoomName;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Room updated successfully",
+                existingRoom.RoomID,
+                existingRoom.RoomName
+            });
         }
     }
 }

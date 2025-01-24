@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ChatWithMe.Services;
+using Microsoft.Extensions.FileProviders;
 
 namespace ChatWithMe
 {
@@ -78,12 +79,28 @@ namespace ChatWithMe
 
             var app = builder.Build();
             app.UseCors("AllowLocalhost3000");
+            //creates the uploads dir if not exits u
+            var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
               app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseStaticFiles(); 
+            
+            // Serve files from the "uploads" directory in project root
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(app.Environment.ContentRootPath, "uploads")),
+                RequestPath = "/uploads"
+            });
 
             app.UseRouting();
             app.UseHttpsRedirection();

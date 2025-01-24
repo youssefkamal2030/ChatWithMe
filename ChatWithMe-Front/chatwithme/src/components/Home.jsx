@@ -14,13 +14,29 @@ const LandingPage = () => {
   else {
     navigate('/Login');
   }
+  
   };
+  const handlejoinRoom = ()=>
+  {
+    if(isLoggedIn)
+    {
+      navigate("/Rooms")
+    }
+    else
+    {
+      navigate("/Login")
+    }
+  }
   return (
     <div className="landing-page">
       <h1>Welcome {username}</h1>
       <p>Would you like to ChatWithMe?</p>
         <button className="create-room-button" onClick={handleCreateRoom}>
           Create Room
+        </button>
+        or 
+        <button className="create-room-button" onClick={handlejoinRoom}>
+          Join Room
         </button>
     </div>
   );
