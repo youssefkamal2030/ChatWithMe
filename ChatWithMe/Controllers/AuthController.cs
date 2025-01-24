@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     private readonly RoleManager<User> _roleManager;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _env;
-    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration,IWebHostEnvironment env)
+    public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IWebHostEnvironment env)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -37,11 +37,11 @@ public class AuthController : ControllerBase
         }
 
         var password = dto.Password; //this to store the password as plain-text for testing reasons 
-            var ExistingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if(ExistingUser != null)
-            {
-                return BadRequest(new { message = "This user Already Exists" });
-            }
+        var ExistingUser = await _userManager.FindByEmailAsync(dto.Email);
+        if (ExistingUser != null)
+        {
+            return BadRequest(new { message = "This user Already Exists" });
+        }
         string profilePicturePath = null;
         string filePath = null;
 
@@ -102,6 +102,11 @@ public class AuthController : ControllerBase
                 return BadRequest(result.Errors);
             }
         }
+        catch(Exception ex)
+        {
+            return BadRequest(new { Error = $"Execption occured :{ex.Message}" });
+        }
+    }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] User user)
     {
