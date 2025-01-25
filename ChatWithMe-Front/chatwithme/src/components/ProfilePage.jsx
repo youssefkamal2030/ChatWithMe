@@ -13,19 +13,26 @@ const ProfilePage = () => {
     const currentUser = localStorage.getItem('username');
     const username = currentUser
     const token = localStorage.getItem('token');
-
+    const backendUrl = 'https://localhost:44346';
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(
-                    `https://localhost:44346/api/Users/${currentUser}`,
+                    `${backendUrl}/api/Users/${currentUser}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }
                 );
-                setProfile(response.data);
+                    const profileData = {
+                    ...response.data,
+                    profilePicture: response.data.profilePicture 
+                        ? `${backendUrl}${response.data.profilePicture}`
+                        : '/default-avatar.png'
+                };
+                
+                setProfile(profileData);
                 setBio(response.data.bio || '');
             } catch (error) {
                 if (error.response?.status === 401) {
@@ -48,43 +55,60 @@ const ProfilePage = () => {
         setError('');
         
         if (!token) {
-          navigate('/login');
-          return;
-        }
-      
-        const formData = new FormData();
-        // Use lowercase keys to match backend expectations
-        if (bio !== profile?.bio) formData.append('bio', bio); // lowercase 'bio'
-        if (selectedFile) formData.append('profilePicture', selectedFile); // lowercase 'profilePicture'
-      
-        try {
-          // Send to the correct endpoint: /api/updateProfile
-          const response = await axios.put(
-            `https://localhost:44346/api/updateProfile`, // Updated endpoint
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          
-          setProfile(response.data);
-          setEditing(false);
-          setSelectedFile(null);
-        } catch (error) {
-          // Improved error handling
-          if (error.response?.status === 401) {
             navigate('/login');
-          } else if (error.response?.data) {
-            setError(error.response.data.error || error.response.data);
-          } else {
-            setError('Failed to update profile');
-          }
+            return;
         }
-      };
-
+    
+        const formData = new FormData();
+        
+        // Match backend DTO property names (case-sensitive)
+        if (bio !== profile?.bio) formData.append('Bio', bio); // Uppercase 'Bio'
+        if (selectedFile) formData.append('ProfilePicture', selectedFile); // Uppercase 'ProfilePicture'
+    
+        try {
+            // Include username in endpoint URL
+            const response = await axios.put(
+                `${backendUrl}/api/Users/${currentUser}`, // Updated endpoint format
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+    
+            // Construct full image URL from backend response
+            const updatedProfile = {
+                ...response.data,
+                profilePicture: response.data.profilePicture 
+                    ? `${backendUrl}${response.data.profilePicture}`
+                    : '/default-avatar.png',
+                createdAt: new Date(response.data.createdAt) // Ensure Date object
+            };
+    
+            setProfile(updatedProfile);
+            setEditing(false);
+            setSelectedFile(null);
+        } catch (error) {
+            // Handle backend validation errors
+            if (error.response?.status === 400) {
+                setError(error.response.data);
+            } else if (error.response?.status === 401) {
+                navigate('/login');
+            } else if (error.response?.data) {
+                setError(error.response.data.title || error.response.data);
+            } else {
+                setError('Failed to update profile');
+            }
+            
+            // Clear file input on error
+            if (error.response?.status === 400) {
+                document.querySelector('input[type="file"]').value = '';
+                setSelectedFile(null);
+            }
+        }
+    };
     if (!profile) return <div className="loading">Loading...</div>;
 
     return (
