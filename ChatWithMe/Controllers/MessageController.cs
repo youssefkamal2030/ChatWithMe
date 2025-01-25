@@ -26,7 +26,7 @@ namespace ChatWithMe.Controllers
             var messages = await _context.Message
         .Where(m => m.RoomID == roomId)
         .Include(m => m.Sender) // Load the Sender navigation property
-        .Select(m => new RoomMessages
+        .Select(m => new RoomMessagesDto
         {
             Username = m.Sender.UserName,
             Content = m.Content,

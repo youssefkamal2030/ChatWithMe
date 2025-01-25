@@ -2,7 +2,7 @@
 
 namespace ChatWithMe.Models.DTO_s
 {
-    public class Register
+    public class RegisterDto
     {
         [Required]
         public string UserName { get; set; }

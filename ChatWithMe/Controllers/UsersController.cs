@@ -54,15 +54,11 @@ public class UsersController : ControllerBase
     // PUT: api/Users/{username}
     [HttpPut("{username}")]
     public async Task<ActionResult<ProfileDto>> UpdateProfile(
-        string username,
-        [FromForm] UpdateProfileDto dto)
+    string username,
+    [FromForm] UpdateProfileDto dto)
     {
         var user = await _userManager.FindByNameAsync(username);
         if (user == null) return NotFound();
-
-        // Authorization check
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (user.Id != currentUser.Id) return Forbid();
 
         // Update bio
         if (!string.IsNullOrEmpty(dto.Bio))
@@ -87,12 +83,9 @@ public class UsersController : ControllerBase
                 return BadRequest("Invalid file type. Allowed types: JPG, JPEG, PNG, GIF");
             }
 
-            // Create uploads directory in project root (outside wwwroot)
+            // Create uploads directory
             var uploadsFolder = Path.Combine(_env.ContentRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
+            Directory.CreateDirectory(uploadsFolder); // ✅ Ensure directory exists
 
             // Save file
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
@@ -103,7 +96,6 @@ public class UsersController : ControllerBase
                 await dto.ProfilePicture.CopyToAsync(stream);
             }
 
-            // Set relative URL path
             user.ProfilePicture = $"/uploads/{uniqueFileName}";
         }
 
@@ -112,10 +104,8 @@ public class UsersController : ControllerBase
         // Return updated profile
         var stats = new
         {
-            RoomsCreated = await _context.ChatRoom
-                .CountAsync(r => r.CreatedByID == user.Id),
-            MessagesSent = await _context.Message
-                .CountAsync(m => m.SenderID == user.Id)
+            RoomsCreated = await _context.ChatRoom.CountAsync(r => r.CreatedByID == user.Id),
+            MessagesSent = await _context.Message.CountAsync(m => m.SenderID == user.Id)
         };
 
         return new ProfileDto

@@ -2,7 +2,7 @@
 
 namespace ChatWithMe.Models.DTO_s
 {
-    public class Login
+    public class LoginDto
     {
         [Required]
         [EmailAddress]

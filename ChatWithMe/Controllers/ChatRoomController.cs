@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatWithMe.Models.DTO_s;
 
 namespace ChatWithMe.Controllers
 {
@@ -21,14 +22,25 @@ namespace ChatWithMe.Controllers
         // GET: api/ChatRoom
         [HttpGet]
 
-        public async Task<ActionResult<IEnumerable<ChatRoom>>> GetChatRooms()
+        public async Task<ActionResult<IEnumerable<ChatRoomsDto>>> GetChatRooms()
         {
             var chatRooms = await _context.ChatRoom
-                .Include(c => c.Messages)
-                .Include(c => c.UserChatRooms)
+                .Include(c => c.CreatedBy) 
                 .ToListAsync();
 
-            return Ok(chatRooms);
+            var result = chatRooms.Select(c => new ChatRoomsDto
+            {
+                RoomID = c.RoomID,
+                RoomName = c.RoomName,
+                CreatedAt = c.CreatedAt,
+                CreatedBy = new User
+                {
+                    UserName = c.CreatedBy.UserName,
+                    Email = c.CreatedBy.Email
+                }
+            });
+
+            return Ok(result);
         }
 
         // GET: api/ChatRoom/{id}

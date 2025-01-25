@@ -1,6 +1,6 @@
 ﻿namespace ChatWithMe.Models.DTO_s
 {
-    public class RoomMessages
+    public class RoomMessagesDto
     {
         public string Username { get; set; }
         public string Content { get; set; }
