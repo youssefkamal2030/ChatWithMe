@@ -206,36 +206,21 @@ const ChatRoom = () => {
         </div>
 
         <div className="chat-messages">
-        {messages.map((msg, index) => (
-  <div key={index} className={`message ${msg.senderID === localStorage.getItem("userId") ? "your-message" : "other-message"}`}>
-    <div className="message-header">
-      <span className="username">{msg.username}</span>
-      <span className="message-time">
-        {new Date(msg.sentAt).toLocaleTimeString()}
-      </span>
-      {msg.senderID === localStorage.getItem("userId") && (
-        <div className="message-actions">
-          <button onClick={() => handleEditClick(msg.messageID, msg.content)}>✏️</button>
-          <button onClick={() => handleDelete(msg.messageID)}>🗑️</button>
-        </div>
-      )}
-    </div>
-    <div className="message-content">
-      {editingMessageId === msg.messageID ? (
-        <div className="edit-container">
-          <input
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-          />
-          <button onClick={handleSaveEdit}>Save</button>
-          <button onClick={() => setEditingMessageId(null)}>Cancel</button>
-        </div>
-      ) : (
-        msg.content
-      )}
-    </div>
-  </div>
-))}
+          {messages.map((msg, index) => (
+            <div key={index} 
+                 className={`message ${msg.username === username ? "your-message" : "other-message"}`}>
+              <div className="message-header">
+                <span className="username">{msg.username}</span>
+                <span className="message-time">
+                  {new Date(msg.sentAt).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </span>
+              </div>
+              <div className="message-content">{msg.content}</div>
+            </div>
+          ))}
           <div ref={latestMessageRef}></div>
         </div>
 
