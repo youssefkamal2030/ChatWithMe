@@ -1,38 +1,157 @@
+/* Modern Header Styling */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #007bff;
+  padding: 1rem 4%;
+  background: linear-gradient(135deg, #0066cc 0%, #007bff 100%);
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #fff 0%, #e0f3ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo:hover {
+  transform: scale(1.02);
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
   align-items: center;
 }
 
+/* Navigation Links */
+.btn {
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn-light {
+  background: rgba(255, 255, 255, 0.9);
+  color: #007bff !important;
+  border: 1px solid rgba(0, 123, 255, 0.1);
+}
+
+.btn-light:hover {
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.btn-outline-light {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Profile Section */
 .profile-link {
   text-decoration: none;
   transition: all 0.3s ease;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .profile-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .profile-link .emoji {
-  transition: transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
 }
 
 .profile-link:hover .emoji {
-  transform: scale(1.1) rotate(10deg);
+  transform: scale(1.2) rotate(15deg);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.btn-outline-light {
-  transition: all 0.3s ease;
+/* Logout Button Enhancement */
+.btn-outline-light.logout-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline-light.logout-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, 
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+}
+
+.btn-outline-light.logout-btn:hover::after {
+  left: 50%;
+  top: 50%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.8rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.5rem;
+  }
+  
+  .profile-link span:first-child {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

@@ -98,7 +98,6 @@ const ChatRoom = () => {
     }
   }, [connection, roomName, username]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     latestMessageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -114,7 +113,7 @@ const ChatRoom = () => {
       alert("Failed to send message");
     }
   };
-
+  console.log(activeUsers)
   return (
     <div className="chat-container">
       {/* Active Users Sidebar */}

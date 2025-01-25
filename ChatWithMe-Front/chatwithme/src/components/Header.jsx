@@ -33,9 +33,9 @@ const Header = () => {
       <span className="text-white">Hi {username}</span>
       <span className="emoji ms-1">👋</span>
     </Link>
-    <button onClick={handleLogout} className="btn btn-outline-light">
-      Logout
-    </button>
+    <button onClick={handleLogout} className="btn btn-outline-light logout-btn">
+  Logout
+</button>
   </>
 ) : (
   <>

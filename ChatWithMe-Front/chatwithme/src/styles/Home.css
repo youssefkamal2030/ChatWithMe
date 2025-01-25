@@ -1,35 +1,192 @@
+/* Modern Landing Page Styling */
 .landing-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 80vh;
+  min-height: 100vh;
   text-align: center;
-  background-color: #f0f2f5;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
 }
 
-.landing-page h1 {
+.chat-bubbles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  animation: float 20s infinite linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(10deg); }
+  50% { transform: translateY(10px) rotate(-10deg); }
+  75% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.bubble-1 { top: 20%; left: 10%; width: 60px; height: 60px; animation-delay: 0s; }
+.bubble-2 { top: 60%; left: 80%; width: 80px; height: 80px; animation-delay: 2s; }
+.bubble-3 { top: 40%; left: 70%; width: 100px; height: 100px; animation-delay: 4s; }
+.bubble-4 { top: 80%; left: 20%; width: 70px; height: 70px; animation-delay: 6s; }
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  color: #2d3436;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #007bff, #00d4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.waving-hand {
+  margin-left: 1rem;
+  animation: wave 2s infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: #555;
+  margin-bottom: 3rem;
+}
+
+.cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.cta-btn {
+  padding: 1.2rem 2.5rem;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.create-btn {
+  background: linear-gradient(45deg, #007bff, #00d4ff);
+  color: white;
+}
+
+.join-btn {
+  background: linear-gradient(45deg, #28a745, #00ff88);
+  color: white;
+}
+
+.cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 123, 255, 0.3);
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #666;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 4rem;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: #333;
 }
 
-.landing-page p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  color: #555;
+.feature-card h3 {
+  color: #2d3436;
+  margin-bottom: 0.5rem;
 }
 
-.create-room-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  color: white;
-  background-color: #28a745;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.feature-card p {
+  color: #666;
+  font-size: 0.95rem;
 }
 
-.create-room-button:hover {
-  background-color: #218838;
+/* Responsive Design */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .cta-btn {
+    width: 100%;
+    padding: 1rem 1.5rem;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+  }
 }
