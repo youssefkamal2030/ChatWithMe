@@ -33,16 +33,12 @@ namespace ChatWithMe.Controllers
                 RoomID = c.RoomID,
                 RoomName = c.RoomName,
                 CreatedAt = c.CreatedAt,
-                CreatedBy = new User
-                {
-                    UserName = c.CreatedBy.UserName,
-                    Email = c.CreatedBy.Email
-                }
+                CreatedByUserName = c.CreatedBy.UserName, 
+                CreatedByEmail = c.CreatedBy.Email       
             });
 
             return Ok(result);
         }
-
         // GET: api/ChatRoom/{id}
         [HttpGet("{id}")]
 

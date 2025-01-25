@@ -2,9 +2,10 @@
 {
     public class ChatRoomsDto
     {
-        public int RoomID { get; set; } // Add this
+        public int RoomID { get; set; }
         public string RoomName { get; set; }
-        public User CreatedBy { get; set; } // Change from string to UserDto
         public DateTime CreatedAt { get; set; }
+        public string CreatedByUserName { get; set; } 
+        public string CreatedByEmail { get; set; }   
     }
 }

@@ -17,8 +17,7 @@ const RoomList = () => {
           throw new Error('Failed to fetch rooms');
         }
         const data = await response.json();
-        
-
+        console.log(data.$values)
         setRooms(data.$values);
       } catch (err) {
         setError(err.message);
@@ -30,9 +29,8 @@ const RoomList = () => {
     fetchRooms();
   }, []);
 
-  // Handle room click
   const handleRoomClick = (roomId) => {
-    navigate(`/ChatRoom/${roomId}`); // Navigate to the room page
+    navigate(`/ChatRoom/${roomId}`);
   };
 
   if (loading) {
@@ -54,7 +52,7 @@ const RoomList = () => {
             onClick={() => handleRoomClick(room.roomID)}
           >
             <h2>{room.roomName}</h2>
-            <p>Created by: {room.createdBy?.username || 'Unknown'}</p>
+            <p>Created by: {room?.createdByUserName || 'Unknown'}</p>
             <p>Created at: {new Date(room.createdAt).toLocaleString()}</p>
           </div>
         ))}
