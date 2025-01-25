@@ -96,6 +96,15 @@ namespace ChatWithMe.Hubs
                 .Where(u => u.Value.RoomName == roomName)
                 .Select(u => u.Value.UserName)
                 .Distinct()
+                .ToList()
+                .Select(async username => await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == username))
+                .Select(t => t.Result)
+                .Select(u => new {
+                    Username = u.UserName,
+                    Photo = u.ProfilePicture,  
+                    Bio = u.Bio
+                })
                 .ToList();
 
             await Clients.Group(roomName).SendAsync("ActiveUsers", activeUsers);

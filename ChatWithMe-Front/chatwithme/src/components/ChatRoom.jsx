@@ -13,6 +13,8 @@ const ChatRoom = () => {
   const [roomName, setRoomName] = useState("");
   const latestMessageRef = useRef(null);
   const username = localStorage.getItem("username");
+  const backendUrl = 'https://localhost:44346';
+
 
   // Fetch initial data
   useEffect(() => {
@@ -115,51 +117,73 @@ const ChatRoom = () => {
 
   return (
     <div className="chat-container">
-      <div className="chat-header">
-        <h1>{roomName}</h1>
-        <div className="active-users">
-          <h3>Active Users ({activeUsers.length})</h3>
-          <ul>
-            {activeUsers.map((user, index) => (
-              <li key={index}>{user}</li>
-            ))}
-          </ul>
+      {/* Active Users Sidebar */}
+      <div className="active-users-sidebar">
+        <h3>Active Users ({activeUsers.length})</h3>
+        <ul>
+          {activeUsers.map((user, index) => (
+            <li key={index} className="active-user-item">
+              <img 
+                src={
+                  user.photo 
+                    ? `${backendUrl}${user.photo}` 
+                    : '/default-avatar.png'
+                }
+                alt={user.username}
+                className="user-avatar"
+                onError={(e) => {
+                  e.target.src = '/default-avatar.png';
+                }}
+              />
+              <div className="user-info">
+                <span className="username">{user.username}</span>
+                <p className="user-bio">{user.bio || "No bio yet"}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="chat-main">
+        <div className="chat-header">
+          <h1>{roomName}</h1>
+        </div>
+
+        <div className="chat-messages">
+          {messages.map((msg, index) => (
+            <div key={index} 
+                 className={`message ${msg.username === username ? "your-message" : "other-message"}`}>
+              <div className="message-header">
+                <span className="username">{msg.username}</span>
+                <span className="message-time">
+                  {new Date(msg.sentAt).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })}
+                </span>
+              </div>
+              <div className="message-content">{msg.content}</div>
+            </div>
+          ))}
+          <div ref={latestMessageRef}></div>
+        </div>
+
+        <div className="chat-input">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Type your message..."
+          />
+          <button onClick={sendMessage}>
+            Send
+          </button>
         </div>
       </div>
-
-      <div className="chat-messages">
-        {messages.map((msg, index) => (
-          <div key={index} 
-               className={`message ${msg.username === username ? "your-message" : "other-message"}`}>
-            <div className="message-header">
-              <span className="username">{msg.username}</span>
-              <span className="message-time">
-                {new Date(msg.sentAt).toLocaleTimeString([], { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
-              </span>
-            </div>
-            <div className="message-content">{msg.content}</div>
-          </div>
-        ))}
-        <div ref={latestMessageRef}></div>
-      </div>
-
-      <div className="chat-input">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Type your message..."
-        />
-        <button onClick={sendMessage}>
-          Send
-        </button>
-      </div>
     </div>
-  );
+);
 };
 
 export default ChatRoom;
