@@ -6,6 +6,8 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -13,7 +15,6 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -24,33 +25,29 @@ const Register = () => {
       return;
     }
 
-    const userData = {
-      username,
-      email,
-      password,
-      confirmPassword,
-    };
+    // Create FormData for multipart upload
+    const formData = new FormData();
+    formData.append('UserName', username);
+    formData.append('Email', email);
+    formData.append('Password', password);
+    formData.append('Bio', bio);
+    if (profilePicture) {
+      formData.append('ProfilePicture', profilePicture);
+    }
 
     try {
       const response = await fetch('https://localhost:44346/Auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
+        body: formData, // Let browser set Content-Type automatically
+        });
 
       if (!response.ok) {
         const errorData = await response.json();
-     
-       console.log(errorData)
-        throw new Error(errorData.message);
+        throw new Error(errorData.message || 'Registration failed');
       }
 
       const data = await response.json();
       console.log('Registration successful:', data);
-
-     
       navigate('/login');
     } catch (err) {
       setError(err.message);
@@ -74,6 +71,7 @@ const Register = () => {
               required
             />
           </div>
+
           <div className="input-group">
             <label htmlFor="email">Email</label>
             <input
@@ -84,6 +82,27 @@ const Register = () => {
               required
             />
           </div>
+
+          <div className="input-group">
+            <label htmlFor="bio">Bio</label>
+            <textarea
+              id="bio"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows="3"
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="profilePicture">Profile Picture</label>
+            <input
+              id="profilePicture"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setProfilePicture(e.target.files[0])}
+            />
+          </div>
+
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
@@ -94,6 +113,7 @@ const Register = () => {
               required
             />
           </div>
+
           <div className="input-group">
             <label htmlFor="confirmPassword">Confirm Password</label>
             <input
@@ -104,6 +124,7 @@ const Register = () => {
               required
             />
           </div>
+
           <button type="submit" className="register-button">
             Register
           </button>

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ChatWithMe.Services;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace ChatWithMe
 {
@@ -19,11 +20,19 @@ namespace ChatWithMe
             {
                 options.AddPolicy("AllowLocalhost3000", builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000", "http://localhost:3001") 
-                           .AllowAnyHeader() 
+                    // Add HTTPS origins
+                    builder.WithOrigins("http://localhost:3000", "https://localhost:3000",
+                                        "http://localhost:3001", "https://localhost:3001")
+                           .AllowAnyHeader()
                            .AllowAnyMethod()
-                           .AllowCredentials(); 
+                           .AllowCredentials();
                 });
+            });
+            builder.Services.Configure<FormOptions>(options => {
+                options.MultipartBodyLengthLimit = 150_000_000; // 150 MB
+            });
+            builder.WebHost.ConfigureKestrel(options => {
+                options.Limits.MaxRequestBodySize = 150_000_000; // 150 MB
             });
             builder.Services.AddSingleton<UserTrackerService>();
             builder.Services.AddControllers()
@@ -78,7 +87,6 @@ namespace ChatWithMe
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ChatWithMe")));
 
             var app = builder.Build();
-            app.UseCors("AllowLocalhost3000");
             //creates the uploads dir if not exits u
             var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
             if (!Directory.Exists(uploadsPath))
@@ -103,7 +111,7 @@ namespace ChatWithMe
             });
 
             app.UseRouting();
-            app.UseHttpsRedirection();
+            app.UseCors("AllowLocalhost3000");
             app.UseAuthentication(); 
             app.UseAuthorization();
             app.MapControllers();

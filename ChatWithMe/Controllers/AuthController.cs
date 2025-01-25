@@ -50,7 +50,7 @@ public class AuthController : ControllerBase
             // Handle profile picture upload
             if (dto.ProfilePicture != null)
             {
-                // Validation
+               
                 if (dto.ProfilePicture.Length > 2 * 1024 * 1024)
                 {
                     return BadRequest("Profile picture must be less than 2MB");
@@ -104,22 +104,25 @@ public class AuthController : ControllerBase
         }
         catch(Exception ex)
         {
-            return BadRequest(new { Error = $"Execption occured :{ex.Message}" });
+            Console.WriteLine($"CRITICAL ERROR: {ex}");
+            return StatusCode(500, "Internal server error during registration");
         }
     }
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] User user)
+    public async Task<IActionResult> Login([FromBody] Login dto)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var existingUser = await _userManager.FindByEmailAsync(user.Email);
+            return BadRequest(new { Error = "Username or password is invalid" });
+        }
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
             {
-                // Manually compare the plain-text passwords
-                if (existingUser.Password == user.Password)
+                
+                if (existingUser.Password == dto.Password)
                 {
                     var token = GenerateJwtToken(existingUser);
-                    // Sign in the user
+                  
                     await _signInManager.SignInAsync(existingUser, isPersistent: false);
 
                     return Ok(new
@@ -140,11 +143,7 @@ public class AuthController : ControllerBase
             {
                 return BadRequest(new { message = "User not found" });
             }
-        }
-        else
-        {
-            return BadRequest(new {message = "Invalid model state." });
-        }
+        
     }
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
