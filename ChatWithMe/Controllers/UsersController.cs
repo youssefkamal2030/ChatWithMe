@@ -14,10 +14,7 @@ public class UsersController : ControllerBase
     private readonly Context _context;
     private readonly IWebHostEnvironment _env;
 
-    public UsersController(
-        UserManager<User> userManager,
-        Context context,
-        IWebHostEnvironment env)
+    public UsersController(UserManager<User> userManager,Context context,IWebHostEnvironment env)
     {
         _userManager = userManager;
         _context = context;
@@ -53,14 +50,16 @@ public class UsersController : ControllerBase
 
     // PUT: api/Users/{username}
     [HttpPut("{username}")]
-    public async Task<ActionResult<ProfileDto>> UpdateProfile(
-    string username,
-    [FromForm] UpdateProfileDto dto)
+    public async Task<ActionResult<ProfileDto>> UpdateProfile(string username,[FromForm] UpdateProfileDto dto)
     {
         var user = await _userManager.FindByNameAsync(username);
         if (user == null) return NotFound();
 
         // Update bio
+        if(dto.UserName!= null)
+        {
+            user.UserName = dto.UserName;
+        }
         if (!string.IsNullOrEmpty(dto.Bio))
         {
             user.Bio = dto.Bio;
@@ -85,7 +84,7 @@ public class UsersController : ControllerBase
 
             // Create uploads directory
             var uploadsFolder = Path.Combine(_env.ContentRootPath, "uploads");
-            Directory.CreateDirectory(uploadsFolder); // ✅ Ensure directory exists
+            Directory.CreateDirectory(uploadsFolder); 
 
             // Save file
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
@@ -98,7 +97,7 @@ public class UsersController : ControllerBase
 
             user.ProfilePicture = $"/uploads/{uniqueFileName}";
         }
-
+        Console.WriteLine(user);
         await _userManager.UpdateAsync(user);
 
         // Return updated profile

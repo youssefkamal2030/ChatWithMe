@@ -43,23 +43,36 @@ const CreateRoom = () => {
     };
 
     return (
-        <div>
-            <h2>Create a New Room</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {success && <p style={{ color: "green" }}>{success}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Room Name:</label>
-                    <input
-                        type="text"
-                        value={roomName}
-                        onChange={(e) => setRoomName(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Create Room</button>
-            </form>
-        </div>
+        <div className="create-room-container">
+        <h2>Create a New Room</h2>
+        {error && (
+          <div className="alert error">
+            <span className="alert-icon">⚠️</span>
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="alert success">
+            <span className="alert-icon">✅</span>
+            {success}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Room Name</label>
+            <input
+              className="form-input"
+              type="text"
+              value={roomName}
+              onChange={(e) => setRoomName(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-btn">
+            Create Room
+          </button>
+        </form>
+      </div>
     );
 };
 

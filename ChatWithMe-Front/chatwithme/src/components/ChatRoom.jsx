@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import axios from "axios";
 import "../styles/ChatRoom.css";
@@ -11,11 +12,60 @@ const ChatRoom = () => {
   const [activeUsers, setActiveUsers] = useState([]);
   const [message, setMessage] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
   const latestMessageRef = useRef(null);
   const username = localStorage.getItem("username");
   const backendUrl = 'https://localhost:44346';
 
-
+  const handleEditClick = (messageId, currentContent) => {
+    setEditingMessageId(messageId);
+    setEditedContent(currentContent);
+  };
+  
+  const handleSaveEdit = async () => {
+    try {
+      await axios.put(`${backendUrl}/api/Message/${editingMessageId}`, 
+        { Content: editedContent },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+      setEditingMessageId(null);
+    } catch (err) {
+      console.error("Edit failed:", err);
+    }
+  };
+  
+  const handleDelete = async (messageId) => {
+    if (window.confirm("Delete this message permanently?")) {
+      try {
+        await axios.delete(`${backendUrl}/api/Message/${messageId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+      } catch (err) {
+        console.error("Delete failed:", err);
+      }
+    }
+  };
+  //signalR event handlers for Editing
+  useEffect(() => {
+    if (connection) {
+      connection.on("MessageEdited", (messageId, newContent) => {
+        setMessages(prev => prev.map(msg => 
+          msg.messageID === messageId ? {...msg, content: newContent} : msg
+        ));
+      });
+  
+      connection.on("MessageDeleted", (messageId) => {
+        setMessages(prev => prev.filter(msg => msg.messageID !== messageId));
+      });
+    }
+  }, [connection]);
   // Fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -117,30 +167,36 @@ const ChatRoom = () => {
   return (
     <div className="chat-container">
       {/* Active Users Sidebar */}
+      
       <div className="active-users-sidebar">
         <h3>Active Users ({activeUsers.length})</h3>
         <ul>
-          {activeUsers.map((user, index) => (
-            <li key={index} className="active-user-item">
-              <img 
-                src={
-                  user.photo 
-                    ? `${backendUrl}${user.photo}` 
-                    : '/default-avatar.png'
-                }
-                alt={user.username}
-                className="user-avatar"
-                onError={(e) => {
-                  e.target.src = '/default-avatar.png';
-                }}
-              />
-              <div className="user-info">
-                <span className="username">{user.username}</span>
-                <p className="user-bio">{user.bio || "No bio yet"}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+  {activeUsers.map((user, index) => (
+    <li key={index} className="active-user-item">
+      <Link 
+        to={`/profile/${user.username}`} 
+        className="user-link"
+      >
+        <img 
+          src={
+            user.photo 
+              ? `${backendUrl}${user.photo}` 
+              : '/default-avatar.png'
+          }
+          alt={user.username}
+          className="user-avatar"
+          onError={(e) => {
+            e.target.src = '/default-avatar.png';
+          }}
+        />
+        <div className="user-info">
+          <span className="username">{user.username}</span>
+          <p className="user-bio">{user.bio || "No bio yet"}</p>
+        </div>
+      </Link>
+    </li>
+  ))}
+</ul>
       </div>
 
       {/* Main Chat Area */}
@@ -150,21 +206,36 @@ const ChatRoom = () => {
         </div>
 
         <div className="chat-messages">
-          {messages.map((msg, index) => (
-            <div key={index} 
-                 className={`message ${msg.username === username ? "your-message" : "other-message"}`}>
-              <div className="message-header">
-                <span className="username">{msg.username}</span>
-                <span className="message-time">
-                  {new Date(msg.sentAt).toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
-                </span>
-              </div>
-              <div className="message-content">{msg.content}</div>
-            </div>
-          ))}
+        {messages.map((msg, index) => (
+  <div key={index} className={`message ${msg.senderID === localStorage.getItem("userId") ? "your-message" : "other-message"}`}>
+    <div className="message-header">
+      <span className="username">{msg.username}</span>
+      <span className="message-time">
+        {new Date(msg.sentAt).toLocaleTimeString()}
+      </span>
+      {msg.senderID === localStorage.getItem("userId") && (
+        <div className="message-actions">
+          <button onClick={() => handleEditClick(msg.messageID, msg.content)}>✏️</button>
+          <button onClick={() => handleDelete(msg.messageID)}>🗑️</button>
+        </div>
+      )}
+    </div>
+    <div className="message-content">
+      {editingMessageId === msg.messageID ? (
+        <div className="edit-container">
+          <input
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+          />
+          <button onClick={handleSaveEdit}>Save</button>
+          <button onClick={() => setEditingMessageId(null)}>Cancel</button>
+        </div>
+      ) : (
+        msg.content
+      )}
+    </div>
+  </div>
+))}
           <div ref={latestMessageRef}></div>
         </div>
 

@@ -115,8 +115,6 @@ namespace ChatWithMe.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            // Check for duplicate room name (excluding current room)
             var roomExists = await _context.ChatRoom
                 .AnyAsync(r => r.RoomName == chatRoom.RoomName && r.RoomID != id);
             if (roomExists)
@@ -130,7 +128,6 @@ namespace ChatWithMe.Controllers
                 return NotFound();
             }
 
-            // Update only allowed fields
             existingRoom.RoomName = chatRoom.RoomName;
 
             await _context.SaveChangesAsync();

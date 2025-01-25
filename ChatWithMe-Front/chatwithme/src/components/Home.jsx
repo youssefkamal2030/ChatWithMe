@@ -8,7 +8,7 @@ const LandingPage = () => {
   const isLoggedIn = localStorage.getItem('token');
 
   const handleCreateRoom = () => {
-    isLoggedIn ? navigate('./CreateRoom') : navigate('/Login');
+    isLoggedIn ? navigate('/CreatRoom') : navigate('/Login');
   };
 
   const handleJoinRoom = () => {

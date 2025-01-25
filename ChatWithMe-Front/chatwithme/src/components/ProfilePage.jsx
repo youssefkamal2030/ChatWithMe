@@ -5,27 +5,26 @@ import '../styles/ProfilePage.css';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const { username: profileUsername } = useParams();
     const [profile, setProfile] = useState(null);
     const [editing, setEditing] = useState(false);
+    const [newUsername, setNewUsername] = useState('');
     const [bio, setBio] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState('');
-    const currentUser = localStorage.getItem('username');
-    const username = currentUser
+    const currentEmail = localStorage.getItem('email');
     const token = localStorage.getItem('token');
     const backendUrl = 'https://localhost:44346';
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(
-                    `${backendUrl}/api/Users/${currentUser}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
+                    `${backendUrl}/api/Users/${profileUsername}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
-                    const profileData = {
+                
+                const profileData = {
                     ...response.data,
                     profilePicture: response.data.profilePicture 
                         ? `${backendUrl}${response.data.profilePicture}`
@@ -33,22 +32,16 @@ const ProfilePage = () => {
                 };
                 
                 setProfile(profileData);
+                setNewUsername(response.data.userName); // Initialize username
                 setBio(response.data.bio || '');
             } catch (error) {
-                if (error.response?.status === 401) {
-                    navigate('/login');
-                } else {
-                    setError('Failed to load profile');
-                }
+                if (error.response?.status === 401) navigate('/login');
+                else setError('Failed to load profile');
             }
         };
 
-        if (token) {
-            fetchProfile();
-        } else {
-            navigate('/login');
-        }
-    }, [username, token, navigate]);
+        token ? fetchProfile() : navigate('/login');
+    }, [profileUsername, token, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,15 +53,13 @@ const ProfilePage = () => {
         }
     
         const formData = new FormData();
+        formData.append('UserName', newUsername); // Use the new username value
+        if (bio !== profile?.bio) formData.append('Bio', bio);
+        if (selectedFile) formData.append('ProfilePicture', selectedFile);
         
-        // Match backend DTO property names (case-sensitive)
-        if (bio !== profile?.bio) formData.append('Bio', bio); // Uppercase 'Bio'
-        if (selectedFile) formData.append('ProfilePicture', selectedFile); // Uppercase 'ProfilePicture'
-    
         try {
-            // Include username in endpoint URL
             const response = await axios.put(
-                `${backendUrl}/api/Users/${currentUser}`, // Updated endpoint format
+                `${backendUrl}/api/Users/${profileUsername}`,
                 formData,
                 {
                     headers: {
@@ -78,52 +69,63 @@ const ProfilePage = () => {
                 }
             );
     
-            // Construct full image URL from backend response
             const updatedProfile = {
                 ...response.data,
                 profilePicture: response.data.profilePicture 
                     ? `${backendUrl}${response.data.profilePicture}`
                     : '/default-avatar.png',
-                createdAt: new Date(response.data.createdAt) // Ensure Date object
+                createdAt: new Date(response.data.createdAt)
             };
     
             setProfile(updatedProfile);
             setEditing(false);
             setSelectedFile(null);
-        } catch (error) {
-            // Handle backend validation errors
-            if (error.response?.status === 400) {
-                setError(error.response.data);
-            } else if (error.response?.status === 401) {
-                navigate('/login');
-            } else if (error.response?.data) {
-                setError(error.response.data.title || error.response.data);
-            } else {
-                setError('Failed to update profile');
+
+            // Redirect if username changed
+            if (response.data.userName !== profileUsername) {
+                navigate(`/profile/${response.data.userName}`);
             }
-            
-            // Clear file input on error
-            if (error.response?.status === 400) {
-                document.querySelector('input[type="file"]').value = '';
-                setSelectedFile(null);
+        } catch (error) {
+            if (error.response) {
+                if (error.response.status === 400) {
+                    const errorData = error.response.data;
+                    
+                    if (errorData.errors) {
+                        const errorMessages = Object.values(errorData.errors).flat();
+                        setError(errorMessages.join(', '));
+                    } 
+                    else if (typeof errorData === 'string') {
+                        setError(errorData);
+                    }
+                    else {
+                        setError(errorData.title || 'Validation failed');
+                    }
+                    
+                    document.querySelector('input[type="file"]').value = '';
+                    setSelectedFile(null);
+                }
+                else if (error.response.status === 401) {
+                    navigate('/login');
+                }
+            } else {
+                setError('Network error - please try again');
             }
         }
     };
+
     if (!profile) return <div className="loading">Loading...</div>;
 
     return (
         <div className="profile-container">
             <div className="profile-header">
                 <img 
-                    src={profile.profilePicture || '/default-avatar.png'} 
+                    src={profile.profilePicture} 
                     alt="Profile" 
                     className="profile-picture"
-                    onError={(e) => {
-                        e.target.src = '/default-avatar.png';
-                    }}
+                    onError={(e) => e.target.src = '/default-avatar.png'}
                 />
                 <h1>{profile.userName}</h1>
-                {currentUser === username && (
+                {currentEmail === profile.email && (
                     <button 
                         onClick={() => {
                             setEditing(!editing);
@@ -140,6 +142,18 @@ const ProfilePage = () => {
 
             {editing ? (
                 <form onSubmit={handleSubmit} className="profile-form">
+                    <div className="form-group">
+                        <label>Username</label>
+                        <input
+                            type="text"
+                            value={newUsername}
+                            onChange={(e) => setNewUsername(e.target.value)}
+                            required
+                            minLength="3"
+                            maxLength="20"
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label>Bio (max 200 characters)</label>
                         <textarea

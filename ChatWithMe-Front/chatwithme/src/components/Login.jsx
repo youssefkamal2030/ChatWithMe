@@ -39,6 +39,7 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('username', data.userName);
       localStorage.setItem('userID', data.userID);
+      localStorage.setItem('email', data.email);
       navigate('/');
       window.location.reload();
     } catch (err) {
