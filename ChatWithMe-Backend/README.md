@@ -175,11 +175,3 @@ dotnet publish -c Release -o ./publish
 
 ---
 
-## ❤️ Contributions
-
-Contributions, issues, and feature requests are welcome! Feel free to check out the [issues page](https://github.com/youssefkamal2030/chatwithme-backend/issues) or submit a pull request.
-
----
-### ⭐ Don't forget to star this repo if you found it useful!
-```
-
