@@ -63,7 +63,7 @@ Create or update the `appsettings.json` file with the following structure:
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=ChatWithMeDB;"
   },
   "FileStorage": {
-    "ProfilePicturesPath": "/uploads/profiles",
+    "ProfilePicturesPath": "/uploads",
     "MaxFileSizeMB": 2
   },
   "Cors": {
