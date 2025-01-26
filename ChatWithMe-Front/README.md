@@ -104,19 +104,5 @@ REACT_APP_HUB_URL=https://localhost:44346/chatHub
 - **Responsive grid layouts**, **CSS animations**, and **modern gradient backgrounds** for a sleek look.
 - **Mobile-first** approach to ensure the app looks great on any device.
 
-## Contributing 🤝
 
-I welcome contributions! Here’s how you can contribute:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/AmazingFeature`
-3. **Commit changes**: `git commit -m 'Add some AmazingFeature'`
-4. **Push to branch**: `git push origin feature/AmazingFeature`
-5. **Open a Pull Request** with a description of your changes.
-
----
-
-Feel free to open an issue if you encounter any bugs or have suggestions for improvements. Let's build something amazing together! 😄
-
----
 
