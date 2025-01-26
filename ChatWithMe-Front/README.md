@@ -106,7 +106,7 @@ REACT_APP_HUB_URL=https://localhost:44346/chatHub
 
 ## Contributing 🤝
 
-We welcome contributions! Here’s how you can contribute:
+I welcome contributions! Here’s how you can contribute:
 
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/AmazingFeature`
