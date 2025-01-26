@@ -97,3 +97,14 @@
     font-weight: bold;
     color: #333;
 }
+.stat-item p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+  
+  .stat-item p:hover {
+    color: #0056b3;
+    transform: scale(1.05);
+  }

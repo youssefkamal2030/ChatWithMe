@@ -19,13 +19,11 @@ const Header = () => {
         <div className="logo">ChatWithMe</div>
       </Link>
       <nav className="nav">
-        <Link to="/rooms" className="btn btn-light me-2">
-          Rooms
-        </Link>
+      
         {isLoggedIn ? (
           <>
             <Link 
-              to={`/profile/${username}`}  // Updated to include username
+              to={`/profile/${username}`} 
               className="profile-link d-flex align-items-center me-2"
             >
               <span className="text-white">Hi {username}</span>

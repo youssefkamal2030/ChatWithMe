@@ -55,7 +55,7 @@ public class UsersController : ControllerBase
         var user = await _userManager.FindByNameAsync(username);
         if (user == null) return NotFound();
 
-        // Update bio
+     
         if(dto.UserName!= null)
         {
             user.UserName = dto.UserName;
@@ -68,13 +68,13 @@ public class UsersController : ControllerBase
         // Handle profile picture upload
         if (dto.ProfilePicture != null)
         {
-            // Validate file size
+           
             if (dto.ProfilePicture.Length > 2 * 1024 * 1024)
             {
                 return BadRequest("File size exceeds 2MB");
             }
 
-            // Validate file extension
+           
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
             var extension = Path.GetExtension(dto.ProfilePicture.FileName).ToLower();
             if (!allowedExtensions.Contains(extension))
@@ -100,7 +100,7 @@ public class UsersController : ControllerBase
         Console.WriteLine(user);
         await _userManager.UpdateAsync(user);
 
-        // Return updated profile
+        
         var stats = new
         {
             RoomsCreated = await _context.ChatRoom.CountAsync(r => r.CreatedByID == user.Id),
@@ -117,5 +117,32 @@ public class UsersController : ControllerBase
             RoomsCreated = stats.RoomsCreated,
             MessagesSent = stats.MessagesSent
         };
+    }
+    [HttpGet("rooms")]
+    public async Task<ActionResult<IEnumerable<ChatRoomsDto>>> GetRoomsByUserEmail([FromQuery] string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        var rooms = await _context.Message
+            .Where(m => m.SenderID == user.Id)
+            .Include(m => m.Room)
+                .ThenInclude(r => r.CreatedBy)
+            .Select(m => m.Room)
+            .Distinct()
+            .Select(r => new ChatRoomsDto
+            {
+                RoomID = r.RoomID,
+                RoomName = r.RoomName,
+                CreatedAt = r.CreatedAt,
+                CreatedByUserName = r.CreatedBy.UserName,
+                CreatedByEmail = r.CreatedBy.Email
+            })
+            .ToListAsync();
+
+        return Ok(rooms);
     }
 }

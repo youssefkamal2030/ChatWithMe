@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using ChatWithMe.Models;
-using ChatWithMe.Services; // Add this
+using ChatWithMe.Services; 
 using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,22 +9,21 @@ namespace ChatWithMe.Hubs
     public class ChatHub : Hub
     {
         private readonly Context _context;
-        private readonly UserTrackerService _userTracker; // Injected service
+        private readonly UserTrackerService _userTracker; 
 
         public ChatHub(Context context, UserTrackerService userTracker)
         {
             _context = context;
-            _userTracker = userTracker; // Dependency injection
+            _userTracker = userTracker; 
         }
 
         // Method to join a chat room
         public async Task JoinRoom(string roomName, string userName)
         {
-            // Get user from database
+          
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             if (user == null) return;
 
-            // Track user connection
             _userTracker.ConnectedUsers.TryAdd(
                 Context.ConnectionId,
                 (user.Id, user.UserName, roomName)
@@ -33,20 +32,19 @@ namespace ChatWithMe.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
             await Clients.Group(roomName).SendAsync("Notify", $"{userName} joined {roomName}");
 
-            // Broadcast updated user list
+           
             await BroadcastActiveUsers(roomName);
         }
 
         // Method to leave a chat room
         public async Task LeaveRoom(string roomName, string userName)
         {
-            // Remove from tracker
             _userTracker.ConnectedUsers.TryRemove(Context.ConnectionId, out _);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
             await Clients.Group(roomName).SendAsync("Notify", $"{userName} left {roomName}");
 
-            // Broadcast updated user list
+           
             await BroadcastActiveUsers(roomName);
         }
 

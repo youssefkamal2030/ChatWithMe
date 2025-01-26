@@ -196,9 +196,14 @@ const ProfilePage = () => {
                             <p>{profile.roomsCreated}</p>
                         </div>
                         <div className="stat-item">
-                            <h3>Messages Sent</h3>
-                            <p>{profile.messagesSent}</p>
-                        </div>
+  <h3>Messages Sent</h3>
+  <p 
+    style={{ cursor: 'pointer', color: '#007bff' }}
+    onClick={() => navigate('/History')}
+  >
+    {profile.messagesSent}
+  </p>
+</div>
                     </div>
                 </div>
             )}

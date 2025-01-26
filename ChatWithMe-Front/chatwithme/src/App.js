@@ -9,6 +9,7 @@ import ChatRoom from './components/ChatRoom';
 import RoomList from './components/RoomList';
 import SideList from './components/SideList';
 import ProfilePage from './components/ProfilePage';
+import History from './components/History';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -23,7 +24,8 @@ function App() {
         <Route path="/CreatRoom" element={<CreateRoom />} />
         <Route path="/ChatRoom/:roomId" element={<ChatRoom />} />
         <Route path="/Rooms" element={<RoomList />} /> 
-        <Route path="/profile/:username" element={<ProfilePage />} />           
+        <Route path="/profile/:username" element={<ProfilePage />} />       
+        <Route path="/History" element={<History />} />    
          </Routes>
     </Router>
   );
