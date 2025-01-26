@@ -40,7 +40,7 @@ The backend component of **ChatWithMe**, a real-time chat application built with
 
 ### 1. **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/chatwithme-backend.git
+git clone https://github.com/youssefkamal2030/chatwithme-backend.git
 cd chatwithme-backend
 ```
 
