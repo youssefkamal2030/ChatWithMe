@@ -1,4 +1,4 @@
-# ChatWithMe Backend 🎉
+# ChatWithMe-Backend 🎉
 
 The backend component of **ChatWithMe**, a real-time chat application built with **ASP.NET Core**, **SignalR**, and **JWT authentication**. This service provides RESTful APIs and real-time communication for user management, chat rooms, and messaging.
 
