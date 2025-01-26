@@ -43,7 +43,7 @@
 - **React/Next.js** - A fast and modern JavaScript framework.
 - **Axios** - For making API requests to the backend.
 - **SignalR Client** - Real-time messaging with SignalR.
-- **Tailwind CSS** - Utility-first CSS for styling.
+- **Bootstrap** - Utility-first CSS for styling.
 
 ### Backend:
 - **ASP.NET Core 8** - Powerful and scalable backend framework.
@@ -80,19 +80,6 @@ The frontend connects to the backend via:
 - **SignalR**: `http://localhost:44346/chatHub` for real-time messaging and user presence.
 - **Authentication**: JWT tokens are passed in HTTP headers for secure access.
 - **Database**: SQL Server is used to store users, chat rooms, and messages.
-
----
-
-## 📚 Documentation
-
-- **Backend**:
-  - [API Endpoints](backend/README.md#api-endpoints)
-  - [Database Schema](backend/README.md#database-schema)
-  - [Deployment Guide](backend/README.md#deployment-guide)
-
-- **Frontend**:
-  - [Component Structure](frontend/README.md#component-structure)
-  - [Environment Variables](frontend/README.md#environment-variables)
 
 ---
 
