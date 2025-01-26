@@ -14,7 +14,7 @@
    ```
    
 2. **Follow the setup guides**:
-   - [Backend Setup (API & Database)](backend/README.md)
+   - [Backend Setup (API & Database)](ChatWithMe-Backend/README.md)
    - [Frontend Setup (React Client)](frontend/README.md)
 
 ---
