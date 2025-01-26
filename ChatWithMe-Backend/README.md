@@ -30,9 +30,16 @@ The backend component of **ChatWithMe**, a real-time chat application built with
 - **Real-Time Communication**: SignalR  
 - **Database**: SQL Server + Entity Framework Core  
 - **Authentication**: JWT Bearer Tokens  
-- **File Storage**: Local file system  
+- **File Storage**: Local file system with static file serving
 - **Validation**: FluentValidation  
-- **CORS**: Cross-Origin Resource Sharing  
+- **CORS**: Cross-Origin Resource Sharing
+- **API Documentation**: Swagger/OpenAPI
+
+## Prerequisites
+
+- .NET 8.0 SDK
+- SQL Server
+- Node.js (for potential frontend integration)
 
 ---
 
@@ -95,23 +102,27 @@ dotnet run
 | `/Auth/register`  | POST   | User registration    |
 
 ### **Users**
-| Endpoint                 | Method | Description                |
-|--------------------------|--------|----------------------------|
-| `/api/Users/{username}`  | GET    | Get user profile           |
-| `/api/Users/rooms`       | GET    | Get user's chat rooms      |
+| Method   | Endpoint                | Description                   |
+|----------|-------------------------|-------------------------------|
+| `GET`    | `/api/users/{name}`     | Get user profile              |
+| `PUT`    | `/api/users/{name}`     | Update user profile           |
+| `GET`    | `/api/users/rooms`      | Get user's chat rooms         |
 
 ### **Chat Rooms**
-| Endpoint                 | Method | Description           |
-|--------------------------|--------|-----------------------|
-| `/api/ChatRoom`          | POST   | Create new room       |
-| `/api/ChatRoom/{id}`     | GET    | Get room details      |
+| Method   | Endpoint                | Description               |
+|----------|-------------------------|---------------------------|
+| `GET`    | `/api/chatroom`         | Get all chat rooms        |
+| `POST`   | `/api/chatroom`         | Create new chat room      |
+| `PUT`    | `/api/chatroom/{id}`    | Update chat room          |
+| `DELETE` | `/api/chatroom/{id}`    | Delete chat room          |
 
 ### **Messages**
 | Endpoint                         | Method | Description              |
 |----------------------------------|--------|--------------------------|
 | `/api/Message/room/{roomId}`     | GET    | Get room messages        |
 | `/api/Message/{id}`              | PUT    | Edit a message           |
-
+| `/api/message`                   | POST   | Send a message           |
+| `/api/message/{id}`              |DELETE  | Delete a message         |
 ### **SignalR Hub**  
 `/chatHub`
 
