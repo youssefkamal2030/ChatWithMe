@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
-
+import RecentChats from './RecentChats';
 const LandingPage = () => {
   const navigate = useNavigate();
   const username = localStorage.getItem('username') ?? 'Stranger';
@@ -47,6 +47,7 @@ const LandingPage = () => {
             <span className="icon">🚪</span>
           </button>
         </div>
+        <RecentChats />
 
         {/* Feature Highlights */}
         <div className="features">

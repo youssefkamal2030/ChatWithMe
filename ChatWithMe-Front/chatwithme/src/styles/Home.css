@@ -190,3 +190,10 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+.features {
+  margin-top: 2rem; 
+}
+
+.cta-buttons {
+  margin-bottom: 3rem; 
+}

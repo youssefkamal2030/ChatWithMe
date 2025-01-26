@@ -18,8 +18,8 @@ export const SideListData = [
         cName:'nav-text'
     },
     {
-        title: 'Friends',
-        path: '/FriendsList',
+        title: 'CreateRoom',
+        path: '/CreatRoom',
         icon: <AiIcons.AiFillHome />,
         cName:'nav-text'
     },
