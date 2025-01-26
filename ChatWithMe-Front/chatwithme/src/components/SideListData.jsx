@@ -2,6 +2,9 @@ import React from "react";
 import * as Faicons from 'react-icons/fa'
 import * as AiIcons from 'react-icons/ai'
 import * as ioIcons from 'react-icons/io'
+import { FaHistory } from "react-icons/fa";
+import { IoAdd } from "react-icons/io5";
+import { IoIosChatbubbles } from "react-icons/io";
 
 
 export const SideListData = [
@@ -14,19 +17,19 @@ export const SideListData = [
     {
         title: 'History',
         path: '/History',
-        icon: <AiIcons.AiFillHome />,
+        icon: <FaHistory />,
         cName:'nav-text'
     },
     {
         title: 'CreateRoom',
         path: '/CreatRoom',
-        icon: <AiIcons.AiFillHome />,
+        icon: <IoAdd /> ,
         cName:'nav-text'
     },
     {
         title: 'Rooms',
         path: '/Rooms',
-        icon: <AiIcons.AiFillHome />,
+        icon: <IoIosChatbubbles />,
         cName:'nav-text'
     },
         

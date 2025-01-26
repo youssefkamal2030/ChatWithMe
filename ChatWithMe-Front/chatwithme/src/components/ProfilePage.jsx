@@ -16,6 +16,14 @@ const ProfilePage = () => {
     const token = localStorage.getItem('token');
     const backendUrl = 'https://localhost:44346';
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userID');
+        localStorage.removeItem('email');
+        window.location.reload();
+      };
+    
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -32,7 +40,7 @@ const ProfilePage = () => {
                 };
                 
                 setProfile(profileData);
-                setNewUsername(response.data.userName); // Initialize username
+                setNewUsername(response.data.userName); 
                 setBio(response.data.bio || '');
             } catch (error) {
                 if (error.response?.status === 401) navigate('/login');
@@ -53,7 +61,7 @@ const ProfilePage = () => {
         }
     
         const formData = new FormData();
-        formData.append('UserName', newUsername); // Use the new username value
+        formData.append('UserName', newUsername); 
         if (bio !== profile?.bio) formData.append('Bio', bio);
         if (selectedFile) formData.append('ProfilePicture', selectedFile);
         
@@ -83,7 +91,8 @@ const ProfilePage = () => {
 
             // Redirect if username changed
             if (response.data.userName !== profileUsername) {
-                navigate(`/profile/${response.data.userName}`);
+                navigate(`/login`);
+                handleLogout();
             }
         } catch (error) {
             if (error.response) {
