@@ -95,7 +95,7 @@ Before running the application, make sure you have the following installed:
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can contribute:
+I welcome contributions! Here's how you can contribute:
 
 1. **Fork the repository**
 2. **Follow the backend and frontend guidelines** for setup.
