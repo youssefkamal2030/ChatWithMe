@@ -52,7 +52,7 @@ const ChatRoom = () => {
       }
     }
   };
-  //signalR event handlers for Editing
+  //signalR event handlers
   useEffect(() => {
     if (connection) {
       connection.on("MessageEdited", (messageId, newContent) => {
